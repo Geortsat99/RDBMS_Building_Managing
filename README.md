@@ -1,5 +1,5 @@
 # **RDBMS_Building_Managing**
----
+
 
 1. This is a toy database made for a course project. It was performed in Oracle, though the specific SQL environment and language is unimportant. 
 
@@ -13,6 +13,7 @@
 - an extra formatting .txt file,
 - triggers, and
 - procedures within the database.
+
 These additions are thoroughly explained in the relevant sections. The triggers were created mainly to address constraint limitations. The procedures and the formatting file are optional and can be safely ignored if not needed.
 
 6. In future additions, I will make sure to include views, grants (more DCL), indices, more queries and more.
