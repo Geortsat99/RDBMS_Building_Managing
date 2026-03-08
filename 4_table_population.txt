@@ -1,0 +1,137 @@
+-- ===========================================================
+-- III. POPULATION OF TABLES
+-- ===========================================================
+
+-- C01. We generated our population values with the help of copilot and chatgpt. 
+--     we prompted the queries and the structure of our schema with some guidelins and limitations on what we wanted exactly and 
+--     the genai gave us the values. it didn't returned us the actual code but only the values
+
+-- C02. with the help of genai we find the most campact way to populate our tables. 
+--     actually we ended up with a solution that we already knew. 
+--     this is because in oracle we cannot popylate tables like MySQL giving in each line only the values
+
+-- C03. we used different ways to insert our values as was stated by the description of the assignment. We used:
+--         a. insert statements where we explicitly stated the column attributes in the order that we want and not in the default tables' order. 
+--            with this insert statement we can explicitly leave out a column so the corresponding values becomes either the default value 
+--            (if it exists for that column) or null. if we want to leave a value null, when there is a default value for a specific attribute though, 
+--            we must explicitly stated its null value.
+--         b. insert statements where we didn't stated the attributes, so we needed to insert the values with the specified order 
+--            of the attributes of each table. Note that when we want to assign a default or a null value, 
+--            we must explicitly state that not to break the order of values.
+
+-- A. STADIUM INSERTIONS
+-- ---------------------------------------
+INSERT INTO STADIUM VALUES (DEFAULT, 'Northgate Arena', 'Manchester', 54000, 1991, 3); 
+
+INSERT INTO STADIUM (CAPACITY, NAME, YEAR_BUILT, CITY)
+VALUES (18000, 'Riverside Park', 1978, 'Bristol');
+
+INSERT INTO STADIUM VALUES (DEFAULT, 'Estadio Sol', 'Seville', 62000, 1986, 5);
+INSERT INTO STADIUM VALUES (DEFAULT, 'Harbour Field', 'Lisbon', 42000, 1994, 2);
+INSERT INTO STADIUM VALUES (DEFAULT, 'Olympic Crescent', 'Athens', 70000, 1982, 4);
+INSERT INTO STADIUM VALUES (DEFAULT, 'Nordstadt Stadion', 'Berlin', 48000, 1989, 3);
+INSERT INTO STADIUM VALUES (DEFAULT, 'Marina Coliseum', 'Rio de Janeiro', 78000, 1985, 4);
+INSERT INTO STADIUM VALUES (DEFAULT, 'Kyoto Garden', 'Kyoto', 32000, 1995, 5);
+
+-- B. TEAM INSERTIONS
+-- ---------------------------------------
+INSERT INTO TEAM (YEAR_FOUNDED, NAME, GOALS_SCORED, STADIUM_ID, CITY_FOUNDED) -- I LEAVE THE GOALS_CONCEDED NULL
+VALUES (1978, 'London Borough FC', 40, 200, 'London');
+
+INSERT INTO TEAM VALUES (DEFAULT, 'Grand Union Manchester', 'Manchester', 1902, 55, 25, 200);
+INSERT INTO TEAM VALUES (DEFAULT, 'Saint George Athletic', 'Oxford', 1933, 30, 45, 201);
+INSERT INTO TEAM VALUES (DEFAULT, 'River Tigers', 'Bristol', 1950, 35, 25, 201);
+INSERT INTO TEAM VALUES (DEFAULT, 'Mega Athletic Bristol', 'Bristol', 1960, 18, 28, 201);
+INSERT INTO TEAM VALUES (DEFAULT, 'Panathenian Rovers', 'Athens', 1965, 60, 35, 204);
+INSERT INTO TEAM VALUES (DEFAULT, 'Thessaloniki United', 'Thessaloniki', 1970, 50, 20, 204);
+INSERT INTO TEAM VALUES (DEFAULT, 'Northern Olympians', 'Seville', NULL, 20, 27, 202);
+INSERT INTO TEAM VALUES (DEFAULT, 'Saint Bridget Rovers', 'Oxford', 1975, 34, 31, 202);
+INSERT INTO TEAM VALUES (DEFAULT, 'Berlin Guardians', 'Berlin', 1940, 27, 30, 205);
+INSERT INTO TEAM VALUES (DEFAULT, 'Barca United', 'Barcelona', 1958, 90, NULL, 205);
+INSERT INTO TEAM VALUES (DEFAULT, 'El Madridos', 'Madrid', 1935, 85, 29, 206);
+INSERT INTO TEAM VALUES (DEFAULT, 'Unidad Espana', 'Seville', 1968, 128, 32, 206);
+INSERT INTO TEAM VALUES (DEFAULT, 'Kyoto Mariners', 'Kyoto', 1998, 35, 18, 207);
+
+-- C. FOOTBALLER INSERTIONS
+-- ---------------------------------------
+INSERT INTO FOOTBALLER (SURNAME, EMAIL, GAMES_PLAYED, COUNTRY, TEAM_ID, FIRST_NAME, GOALS)
+VALUES('Carter','liam.carter@lborough.com', 320, 'ENGLAND', 100, 'Liam', 5);
+
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Jon', 'Jackson', 'GK', 400, 0, 150000, 'jon.jackson@lborough.com', 'ENGLAND', '30-SEP-1985', 100);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Marcus', 'Johnson', 'FOR', 150, 20, 300000, 'marcus.johnson@lborough.com', 'USA', '01-JAN-1991', 100);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Owen', 'Peterson', 'MID', 190, 1, NULL, 'owen.peterson@lborough.com', 'ENGLAND', '21-JUN-1993', 100);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Mateo', 'Silva', 'MID', 210, 18, 250000, 'mateo.silva@grandunion.com', 'PORTUGAL', '05-JUL-1992', 101);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Pedro', 'Alvarez', 'FOR', NULL, 28, 410000, 'pedro.alvarez@grandunion.com', 'SPAIN', '11-JAN-1990', 101);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Ricardo', 'Mendes', DEFAULT, 142, 4, 95000, 'ricardo.mendes@grandunion.com', 'PORTUGAL', '13-SEP-1994', 101);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Alex', 'Rivers', 'FOR', 220, 31, 470000, 'alex.rivers@saintgeorge.com', 'ENGLAND', NULL, 102);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Ethan', 'Jameson', 'MID', 140, 8, 115000, 'ethan.jameson@saintgeorge.com', 'ENGLAND', '30-APR-1994', 102);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Javier', 'Anderson', 'FOR', 210, 33, 480000, 'javier.anderson@saintgeorge.com', 'ARGENTINA', '02-JUL-1989', 102);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Diego', 'Santos', 'FOR', 260, 40, 600000, 'diego.santos@rivertigers.com', 'BRAZIL', '03-JUL-1988', 103);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Jamal', 'Brown', 'FOR', 160, 18, NULL, 'jamal.brown@rivertigers.com', 'USA', '05-MAY-1993', 103);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Lucas', 'Moreira', 'FOR', 195, 29, 430000, 'lucas.moreira@rivertigers.com', 'BRAZIL', '10-JUL-1990', 103);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Carlos', 'Mendes', 'MID', 150, 5, 90000, 'carlos.mendes@rivertigers.com', 'PORTUGAL', '14-MAY-1992', 103);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Miguel', 'Ramos', 'MID', 155, 11, 140000, 'miguel.ramos@megaathletic.com', 'SPAIN', '04-JUN-1990', 104);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Rafael', 'DosSantos', 'MID', 170, 6, 98000, 'rafael.dossantos@megaathletic.com', 'BRAZIL', '24-AUG-1992', 104);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Giorgos', 'Tsatalas', 'FOR', 230, 27, 340000, 'giorgos.tsatalas@panathian.com', 'GREECE', '02-MAY-1990', 105);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Ilias', 'Taggiris', 'DEF', 170, 1, 70000, 'ilias.taggiris@panathian.com', 'GREECE', '02-AUG-1992', 105);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Thiago', 'Pinto', 'MID', 130, 3, 72000, 'thiago.pinto@panathian.com', 'BRAZIL', '09-JUL-1996', 105);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Ivan', 'Kleins', 'FOR', 210, 36, 510000, 'ivan.kleins@thessunited.com', 'CROATIA', '17-DEC-1988', 106);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Daniel', 'Watson', DEFAULT, 145, 0, 68000, 'daniel.watson@thessunited.com', 'ENGLAND', '16-MAR-1995', 106);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Samuel', 'Okoye', DEFAULT, 160, 2, 85000, 'samuel.okoye@thessunited.com', 'NIGERIA', '23-JUL-1991', 106);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Marco', 'Rossi', 'MID', 190, 15, 220000, 'marco.rossi@northernolympians.com', 'ITALY', '07-JUL-1993', 107);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Petros', 'Karras', 'DEF', 170, 1, 70000, 'petros.karras@saintbridget.com', 'GREECE', '02-AUG-1992', 108);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Hugo', 'Mendez', 'MID', 175, 7, 125000, 'hugo.mendez@saintbridget.com', 'URUGUAY', '12-APR-1992', 108);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Felipe', 'Gomes', 'GK', 300, 0, 160000, 'felipe.gomes@berlinguard.com', 'BRAZIL', '06-MAR-1987', 109);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Daniel', 'Kovac', 'MID', 180, 5, 95000, 'daniel.kovac@berlinguard.com', 'CROATIA', '21-JUN-1993', 109);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Mateus', 'Silveira', 'MID', 160, 10, 210000, 'mateus.silveira@barcaunited.com', 'BRAZIL', '18-JUL-1994', 110);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Hiro', 'Sato', 'DEF', 150, 1, 90000, 'hiro.sato@barcaunited.com', 'JAPAN', '04-MAY-1991', 110);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Elias', 'Vazquez', 'FOR', 205, 32, 520000, 'elias.vazquez@barcaunited.com', 'MEXICO', '29-JAN-1989', 110);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Pedro', 'Martinez', 'FOR', 200, 28, 410000, 'pedro.martinez@elmadridos.com', 'SPAIN', '11-JAN-1990', 111);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Diego', 'Alvarez', 'FOR', 260, 40, 600000, 'diego.alvarez@elmadridos.com', 'ARGENTINA', '03-JUL-1988', 111);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Jorge', 'Lopez', 'MID', 165, 5, 98000, 'jorge.lopez@elmadridos.com', 'ARGENTINA', '19-MAY-1993', 111);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Sergio', 'Cortes', 'DEF', 210, 4, 110000, 'sergio.cortes@unidad.com', 'SPAIN', '29-NOV-1989', 112);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Javier', 'Rodriguez', 'FOR', 210, 33, 480000, 'javier.rodriguez@unidad.com', 'ARGENTINA', '02-JUL-1989', 112);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Ana', 'Marquez', 'MID', 140, 2, 72000, 'ana.marquez@unidad.com', 'SPAIN', '08-SEP-1995', 112);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Yuki', 'Tanaka', 'MID', NULL, 6, 98000, 'yuki.tanaka@kyotomar.com', 'JAPAN', '15-JUL-1995', 113);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Takumi', 'Sakamoto', 'FOR', 130, 22, 260000, 'takumi.sakamoto@kyotomar.com', 'JAPAN', '08-FEB-1994', 113);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Omar', 'Khan', 'MID', 120, 2, 65000, 'omar.khan@kyotomar.com', 'PAKISTAN', '11-DEC-1996', 113);
+INSERT INTO FOOTBALLER VALUES (DEFAULT, 'Lucas', 'Fernandes', 'DEF', 170, 2, 80000, 'lucas.fernandes@kyotomar.com', 'PORTUGAL', '19-MAY-1995', 113);
+
+-- D. SPONSOR INSERTIONS
+-- ---------------------------------------
+INSERT INTO SPONSOR (TYPE, NAME, CITY_HQ)
+VALUES ('ENERGY', 'Apex Energy', 'London');
+
+INSERT INTO SPONSOR VALUES (DEFAULT, 'BlueWave Electronics', 'ELECTRONICS', 'Seville');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Crest Financial', 'FINANCE', 'Zurich');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Delta Foods', 'FOOD', 'Lisbon');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Evergreen Logistics', 'LOGISTICS', 'Berlin');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Fjord Breweries', 'BEVERAGE', 'Oslo');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Global Tech', 'ELECTRONICS', 'Tokyo');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Harbor Insurance', 'INSURANCE', 'Athens');
+INSERT INTO SPONSOR VALUES (DEFAULT, 'Zenith Motors', 'AUTOMOTIVE', 'Barcelona');
+
+-- E. SPONSORSHIP INSERTIONS
+-- ---------------------------------------
+INSERT INTO SPONSORSHIP (SPONSOR_ID, FEE, DEPOSIT_DATE, TEAM_ID)
+VALUES (400, 50000, '01-JAN-2022', 100);
+
+INSERT INTO SPONSORSHIP VALUES (101, 401, '20-FEB-2022', 80000);
+INSERT INTO SPONSORSHIP VALUES (102, 403, '05-MAY-2022', 30000);
+INSERT INTO SPONSORSHIP VALUES (103, 401, '12-APR-2022', 90000);
+INSERT INTO SPONSORSHIP VALUES (104, 403, '03-MAR-2022', NULL);
+INSERT INTO SPONSORSHIP VALUES (105, 407, '11-NOV-2021', 45000);
+INSERT INTO SPONSORSHIP VALUES (106, 402, '30-SEP-2022', 100000);
+INSERT INTO SPONSORSHIP VALUES (107, 405, '01-JUN-2022', 80000);
+INSERT INTO SPONSORSHIP VALUES (108, 404, '18-MAY-2022', 35000);
+INSERT INTO SPONSORSHIP VALUES (109, 406, '02-FEB-2022', 110000);
+INSERT INTO SPONSORSHIP VALUES (110, 408, '10-OCT-2022', 150000);
+INSERT INTO SPONSORSHIP VALUES (111, 402, '14-JAN-2022', 70000);
+INSERT INTO SPONSORSHIP VALUES (112, 407, '08-AUG-2022', 55000);
+INSERT INTO SPONSORSHIP VALUES (113, 400, '12-DEC-2021', 30000);
+INSERT INTO SPONSORSHIP VALUES (100, 401, '15-MAR-2022', 120000);
+INSERT INTO SPONSORSHIP VALUES (103, 406, '01-JUL-2022', 70000);
+INSERT INTO SPONSORSHIP VALUES (106, 401, '15-DEC-2022', 50000);
+INSERT INTO SPONSORSHIP VALUES (108, 401, '25-JUL-2022', 60000);
+INSERT INTO SPONSORSHIP VALUES (110, 401, '05-SEP-2022', 90000);
+INSERT INTO SPONSORSHIP VALUES (113, 406, '02-MAR-2022', 45000);

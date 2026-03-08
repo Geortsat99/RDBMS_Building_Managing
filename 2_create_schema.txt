@@ -1,0 +1,87 @@
+-- ===========================================================
+-- I. CREATION OF SEQUENCES AND TABLES
+-- ===========================================================
+
+-- A. SEQUENCES
+-- ---------------------------------------
+
+-- C01. The creation of sequences was such that the corresponding IDs can be easily discernable from each other. 
+--     Then the sequences were put as default to the IDs.
+
+CREATE SEQUENCE SEQ_FOOTBALLER_ID
+    INCREMENT BY 1
+    START WITH 900
+    MAXVALUE 999;
+
+CREATE SEQUENCE SEQ_STADIUM_ID
+    INCREMENT BY 1
+    START WITH 200
+    MAXVALUE 299;
+
+CREATE SEQUENCE SEQ_TEAM_ID
+    INCREMENT BY 1
+    START WITH 100
+    MAXVALUE 199;
+
+CREATE SEQUENCE SEQ_SPONSOR_ID
+    INCREMENT BY 1
+    START WITH 400
+    MAXVALUE 499;
+
+-- B. TABLES
+-- ---------------------------------------
+
+-- C02. The constraint Not Null was applied to attributes accordingly, with the exception of primary keys. 
+--     When the primary key constraints were made, by this process we ensure the table IDs were both Not Null and Unique.
+
+-- C03. As specified by the ERD and the instructions, we have the following:
+--     a. All teams must be assigned to a stadium
+--     b. Stadiums can host either no, one or multiple teams
+--     c. All players must be assigned to a team
+--     d. All teams must have at least one player assigned on them
+--     e. All sponsors must sponsor at least one team
+--     f. All teams must be sponsored by at least one sponsor
+--     For the aforementioned reasons, all foreign keys must be Not Null as well.
+
+
+CREATE TABLE STADIUM(
+    ID NUMBER(3) DEFAULT SEQ_STADIUM_ID.NEXTVAL,
+    NAME VARCHAR2(30) NOT NULL,
+    CITY VARCHAR2(30) NOT NULL,
+    CAPACITY NUMBER(6) DEFAULT 10000,
+    YEAR_BUILT NUMBER(4) NOT NULL,
+    REVIEW_SCORE NUMBER(1) DEFAULT 1);
+
+CREATE TABLE TEAM(
+    ID NUMBER(3) DEFAULT SEQ_TEAM_ID.NEXTVAL,
+    NAME VARCHAR2(30) NOT NULL,
+    CITY_FOUNDED VARCHAR2(30) NOT NULL,
+    YEAR_FOUNDED NUMBER(4),
+    GOALS_SCORED NUMBER(4),
+    GOALS_CONCEDED NUMBER(4),
+    STADIUM_ID NUMBER(3) NOT NULL);
+
+CREATE TABLE FOOTBALLER(
+    ID NUMBER(3) DEFAULT SEQ_FOOTBALLER_ID.NEXTVAL,
+    FIRST_NAME VARCHAR2(20) NOT NULL,
+    SURNAME VARCHAR2(20) NOT NULL,
+    POSITION VARCHAR2(3) DEFAULT 'DEF',
+    GAMES_PLAYED NUMBER(4),
+    GOALS NUMBER(3) NOT NULL,
+    CONTRACT NUMBER(8),
+    EMAIL VARCHAR2(40) NOT NULL,
+    COUNTRY VARCHAR2(30) NOT NULL,
+    DOB DATE,
+    TEAM_ID NUMBER(3) NOT NULL);
+
+CREATE TABLE SPONSOR(
+    ID NUMBER(3) DEFAULT SEQ_SPONSOR_ID.NEXTVAL,
+    NAME VARCHAR2(30) NOT NULL,
+    TYPE VARCHAR2(30) NOT NULL,
+    CITY_HQ VARCHAR2(30) NOT NULL);
+
+CREATE TABLE SPONSORSHIP(
+    TEAM_ID NUMBER(3),
+    SPONSOR_ID NUMBER(3),
+    DEPOSIT_DATE DATE,
+    FEE NUMBER(10));

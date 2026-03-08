@@ -1,0 +1,154 @@
+-- ===========================================================
+-- II. DECLARATION OF CONSTRAINTS AND TRIGGERS
+-- ===========================================================
+
+-- A. CONSTRAINTS
+-- ---------------------------------------
+
+-- C01. we used genai to find the most compact way to contruct our constraints. 
+--     we could easily construct one constraint a time but we found out that we can add constraints per table.
+
+ALTER TABLE STADIUM ADD(
+    CONSTRAINT PK_STADIUM PRIMARY KEY (ID),
+    CONSTRAINT UQ_STADIUM_NAME UNIQUE (NAME),
+    CONSTRAINT CHK_STADIUM_REVIEWSCORE CHECK (REVIEW_SCORE BETWEEN 1 AND 5)
+);
+
+ALTER TABLE TEAM ADD(
+    CONSTRAINT PK_TEAM PRIMARY KEY (ID),
+    CONSTRAINT UQ_TEAM_NAME UNIQUE (NAME), 
+    CONSTRAINT FK_TEAM_STADIUM FOREIGN KEY (STADIUM_ID) REFERENCES STADIUM(ID)
+);
+
+-- C02. Specifically, for the position attribute, since there is a check about being a specific value of a specified list of values, 
+--     we do not need to create a check constraint or a trigger to ensure that is in uppercase.
+
+ALTER TABLE FOOTBALLER ADD(
+    CONSTRAINT PK_FOOTBALLER PRIMARY KEY (ID),
+    CONSTRAINT CHK_FOOTBALLER_POSITION CHECK (POSITION IN ('GK','DEF','MID','FOR')),
+    CONSTRAINT UQ_FOOTBALLER_EMAIL UNIQUE (EMAIL),
+    CONSTRAINT FK_FOOTBALLER_TEAM FOREIGN KEY (TEAM_ID) REFERENCES TEAM(ID)
+);
+
+ALTER TABLE SPONSOR ADD(
+    CONSTRAINT PK_SPONSOR PRIMARY KEY (ID),
+    CONSTRAINT UQ_SPONSOR_NAME UNIQUE (NAME)
+);
+
+ALTER TABLE SPONSORSHIP ADD(
+    CONSTRAINT PK_SPONSORSHIP PRIMARY KEY (TEAM_ID, SPONSOR_ID, DEPOSIT_DATE),
+    CONSTRAINT FK_SPONSORSHIP_TEAM FOREIGN KEY (TEAM_ID) REFERENCES TEAM(ID),
+    CONSTRAINT FK_SPONSORSHIP_SPONSOR FOREIGN KEY (SPONSOR_ID) REFERENCES SPONSOR(ID)
+);
+
+-- B. TRIGGERS
+-- ---------------------------------------
+
+-- C03. The temporal attributes (date of birth, year built, year founded, deposit date) had some intrinsic constraints that we needed to implement. 
+--     We firstly tried to built constraints on them using the sysdate since we want the conditions to be dynamic. 
+--     That didn’t work because the constraint, as we found out with the help of Copilot, needs to be based on something fixed. 
+--     So we resorted to the creation of triggers.
+
+-- C04. We both thought that composite key of the sponsorship table was not descriptive and informative enough for all the cases. 
+--     So we included a deposit date attribute to the composite key. With that, a unique combination for sponsorships was created. 
+--     We made sure not to include the fee in the composite key as one sponsor can give the same amount of money to a team twice 
+--     (and the only changing variable is time, that’s another reason we added the deposit date)
+CREATE TRIGGER TRG_SPONSORSHIP_DEPOSITDATE
+BEFORE INSERT OR UPDATE ON SPONSORSHIP
+FOR EACH ROW
+BEGIN
+    IF :NEW.DEPOSIT_DATE>SYSDATE THEN
+        :NEW.DEPOSIT_DATE:=SYSDATE;
+    END IF;
+END;
+/
+
+CREATE TRIGGER TRG_STADIUM_YEARBUILT
+BEFORE INSERT OR UPDATE ON STADIUM
+FOR EACH ROW
+BEGIN
+    IF :NEW.YEAR_BUILT>TO_NUMBER(TO_CHAR(SYSDATE,'YYYY')) THEN
+        :NEW.YEAR_BUILT:=TO_NUMBER(TO_CHAR(SYSDATE,'YYYY'));
+    END IF;
+END;
+/
+
+CREATE TRIGGER TRG_TEAM_YEARFOUNDED
+BEFORE INSERT OR UPDATE ON TEAM
+FOR EACH ROW
+BEGIN
+    IF :NEW.YEAR_FOUNDED>TO_NUMBER(TO_CHAR(SYSDATE,'YYYY')) THEN
+        :NEW.YEAR_FOUNDED:=TO_NUMBER(TO_CHAR(SYSDATE,'YYYY'));
+    END IF;
+END;
+/
+
+CREATE TRIGGER TRG_FOOTBALLER_DOB
+BEFORE INSERT OR UPDATE ON FOOTBALLER
+FOR EACH ROW
+BEGIN
+    IF :NEW.DOB<ADD_MONTHS(SYSDATE, -12*100) OR :NEW.DOB>ADD_MONTHS(SYSDATE, -12*15) THEN
+        RAISE_APPLICATION_ERROR(-20003, 'DOB must be between 15 and 100 years ago');
+    END IF;
+END;
+/
+
+-- C05. The condition that was most difficult for us to achieve was the on goals scored of each team. 
+--     We needed to ensure that the goals scored of each team were at least as many as the sum of the goals of that team’s players. 
+--     Working separately at first, we came up by different ideas on how to tackle this issue. 
+--     Our final solution was a creation of a trigger that is updating the goals scored of each team 
+--     (either leave them be or, if is smaller than the sum of the goals of the team’s players, 
+--     to update them as the sum of the goals of the team’s players) after an update or insertion happened to the players’ table. 
+--     Other unsuccessful ideas were: 
+--         a) the creation of a constraint checking the goals scored of each team and the sum of the goals of the players and 
+--         b) the creation of a trigger that was doing the same update but before an insertion or update happened to teams’ table. 
+--     GenAI helped with the problems we dealt with the wrong constraint and trigger, but ultimately our idea about the correct trigger was implemented.
+CREATE OR REPLACE TRIGGER TRG_TEAM_GOALS
+AFTER INSERT OR UPDATE ON FOOTBALLER
+FOR EACH ROW
+BEGIN
+    UPDATE TEAM
+    SET GOALS_SCORED = 
+        CASE 
+            WHEN NVL(goals_scored,0)+NVL(:NEW.goals,0)-NVL(:OLD.goals,0)>GOALS_SCORED
+            THEN NVL(goals_scored,0)+NVL(:NEW.goals,0)-NVL(:OLD.goals,0)
+            ELSE GOALS_SCORED
+        END
+    WHERE ID = :NEW.TEAM_ID;
+END;
+/
+
+
+-- C06. The triggers that ensure upper case were created with the help of a procedure since the lines of code were repetitive and bulky. 
+--     Copilot helped with the creation of the procedure. we learned about the procedures, creating procedures, 
+--     creating variables by using the declare statement and assigning values inside the procedure as well as the triggers
+CREATE PROCEDURE PRC_TRG_UPP(
+    TAB_NAME VARCHAR2,
+    COLS_NAME SYS.ODCIVARCHAR2LIST
+) AS
+    COMMAND_TRG VARCHAR2(2000);
+    BEGIN_STRUCTURE VARCHAR2(1000);
+BEGIN
+    FOR i IN 1..COLS_NAME.COUNT LOOP
+        BEGIN_STRUCTURE := BEGIN_STRUCTURE||':NEW.'||COLS_NAME(i)||':=UPPER(:NEW.'||COLS_NAME(i)||');'||CHR(10);
+    END LOOP;
+    COMMAND_TRG := 'CREATE OR REPLACE TRIGGER TRG_'||UPPER(TAB_NAME)||'_UPP'||
+                   ' BEFORE INSERT OR UPDATE ON '||TAB_NAME||
+                   ' FOR EACH ROW BEGIN '||BEGIN_STRUCTURE||' END;';
+    EXECUTE IMMEDIATE COMMAND_TRG;
+END;
+/
+
+-- C07. For each character attribute, apart from email and position, we need to ensure that all the values are uppercase. 
+--     For that reason, our initial thought was to make check constraints accordingly to check if the insertion or 
+--     the update has uppercase values where needed. 
+--     However, that restricts our margin of error, given that a wrongly typed letter will cause an error. 
+--     To deal with this, we removed all uppercase constraints and we created triggers, before an insertion or update, 
+--     that ensure the case of the character attributes by converting each character value to uppercase.
+BEGIN
+    PRC_TRG_UPP('STADIUM', SYS.ODCIVARCHAR2LIST('CITY','NAME'));
+    PRC_TRG_UPP('TEAM', SYS.ODCIVARCHAR2LIST('NAME','CITY_FOUNDED'));
+    PRC_TRG_UPP('FOOTBALLER', SYS.ODCIVARCHAR2LIST('FIRST_NAME','SURNAME','COUNTRY'));
+    PRC_TRG_UPP('SPONSOR', SYS.ODCIVARCHAR2LIST('NAME','TYPE','CITY_HQ'));
+END;
+/

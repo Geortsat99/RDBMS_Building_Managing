@@ -1,0 +1,42 @@
+-- ===========================================================
+-- IV. DELETION OF SCHEMA
+-- ===========================================================
+
+-- A. DROPS
+-- ---------------------------------------
+
+-- C01. There are two ways of droping a schema. We can opt for dropping the contsraints first and later the tables. 
+--      To ensure not having integrity violation issues, we must drop first the foreign keys constraints and later the primary keys, 
+--      as the foreign key depend on the primary keys. Then we can drop every other constraint and then the tables. 
+
+-- C02. However, we choose to to drop with a more compact way, using CASCADE. The order by which we drop tables with cascade again is crucial 
+--      for not having integrity violation issues. We begin by dropping the most dependent table, which is SPONSORSHIP 
+--      (which is dependent with two foreign keys). Note that STADIUM and SPONSOR do not have any foreign key constraint so they can be dropped 
+--      only after all their dependent tables are dropped (SPONSOR any moment after SPONSORSHIP is dropped and STADIUM only after TEAM is dropped). 
+--      Also TEAM is also a parent table of both FOOTBALLER and SPONSORSHIP so it must be drooped after those two. Also, with that way of dropping 
+--      the schema, we do not need to drop separately triggers associated with the tables' columns, as they are dropped automatically.
+
+DROP PROCEDURE PRC_START;
+DROP PROCEDURE PRC_COLS_FORMAT;
+DROP PROCEDURE PRC_TRG_UPP;
+
+DROP TABLE SPONSORSHIP CASCADE CONSTRAINTS;
+DROP TABLE SPONSOR CASCADE CONSTRAINTS;
+DROP TABLE FOOTBALLER CASCADE CONSTRAINTS;
+DROP TABLE TEAM CASCADE CONSTRAINTS;
+DROP TABLE STADIUM CASCADE CONSTRAINTS;
+
+DROP SEQUENCE SEQ_STADIUM_ID;
+DROP SEQUENCE SEQ_TEAM_ID;
+DROP SEQUENCE SEQ_FOOTBALLER_ID;
+DROP SEQUENCE SEQ_SPONSOR_ID;
+
+-- B. DELETES
+-- ---------------------------------------
+
+-- C03. We included some deletes because we used them quite frequently to repopulate our tables when we needed to change values in bulk. 
+DELETE FROM SPONSORSHIP;
+DELETE FROM FOOTBALLER;
+DELETE FROM TEAM;
+DELETE FROM STADIUM;
+DELETE FROM SPONSOR;
